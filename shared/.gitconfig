@@ -1,0 +1,18 @@
+[user]
+	name = eivamu
+	email = eha@eha.no
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rerere]
+	enabled = true
+
+[diff]
+	algorithm = histogram
