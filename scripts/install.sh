@@ -85,5 +85,53 @@ install_gitconfig() {
 
 install_gitconfig
 
+# --- Tmux config ---
+install_tmux() {
+    # Symlink .tmux.conf
+    local candidates=(
+        "$PLATFORM/$ROLE/.tmux.conf"
+        "$PLATFORM/.tmux.conf"
+        "shared/$ROLE/.tmux.conf"
+        "shared/.tmux.conf"
+    )
+
+    local source=""
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -z "$source" ]]; then
+        echo "No .tmux.conf found, skipping."
+        return
+    fi
+
+    local target="$HOME/.tmux.conf"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        local backup="$target.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$target" "$backup"
+        echo "Backed up $target → $backup"
+    fi
+    ln -sf "$source" "$target"
+    echo "Linked $target → $source"
+
+    # Symlink .tmux/ helper scripts
+    local source_dir
+    source_dir="$(dirname "$source")/.tmux"
+    if [[ -d "$source_dir" ]]; then
+        mkdir -p "$HOME/.tmux"
+        for script in "$source_dir"/*; do
+            local name
+            name="$(basename "$script")"
+            ln -sf "$script" "$HOME/.tmux/$name"
+            echo "Linked ~/.tmux/$name → $script"
+        done
+    fi
+}
+
+install_tmux
+
 echo ""
 echo "Done!"
