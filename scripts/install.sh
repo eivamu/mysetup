@@ -36,38 +36,42 @@ echo ""
 
 # --- Package helpers ---
 pkg_install() {
+    local to_install=()
     if [[ $PLATFORM == "macos" ]]; then
-        local to_install=()
         for pkg in "$@"; do
-            if ! brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null; then
+                echo "$pkg -> already installed"
+            else
+                echo "$pkg -> installing"
                 to_install+=("$pkg")
             fi
         done
         if [[ ${#to_install[@]} -gt 0 ]]; then
-            echo "brew install ${to_install[*]}"
             brew install "${to_install[@]}"
         fi
     else
         if command -v apt-get &>/dev/null; then
-            local to_install=()
             for pkg in "$@"; do
-                if ! dpkg -s "$pkg" &>/dev/null; then
+                if dpkg -s "$pkg" &>/dev/null; then
+                    echo "$pkg -> already installed"
+                else
+                    echo "$pkg -> installing"
                     to_install+=("$pkg")
                 fi
             done
             if [[ ${#to_install[@]} -gt 0 ]]; then
-                echo "apt-get install ${to_install[*]}"
                 sudo apt-get install -y "${to_install[@]}"
             fi
         elif command -v dnf &>/dev/null; then
-            local to_install=()
             for pkg in "$@"; do
-                if ! rpm -q "$pkg" &>/dev/null; then
+                if rpm -q "$pkg" &>/dev/null; then
+                    echo "$pkg -> already installed"
+                else
+                    echo "$pkg -> installing"
                     to_install+=("$pkg")
                 fi
             done
             if [[ ${#to_install[@]} -gt 0 ]]; then
-                echo "dnf install ${to_install[*]}"
                 sudo dnf install -y "${to_install[@]}"
             fi
         else
@@ -83,12 +87,14 @@ cask_install() {
     fi
     local to_install=()
     for cask in "$@"; do
-        if ! brew list --cask "$cask" &>/dev/null; then
+        if brew list --cask "$cask" &>/dev/null; then
+            echo "$cask -> already installed"
+        else
+            echo "$cask -> installing"
             to_install+=("$cask")
         fi
     done
     if [[ ${#to_install[@]} -gt 0 ]]; then
-        echo "brew install --cask ${to_install[*]}"
         brew install --cask "${to_install[@]}"
     fi
 }
