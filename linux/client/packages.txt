@@ -1,37 +1,29 @@
-# Linux client: CLI tools
-
-# Core tools
+# Linux client: always install
+bat
 btop
+chafa
 curl
+fastfetch
 fd-find
+fonts-firacode
 fzf
 gh
 git
 git-crypt
 gnupg
+htop
+iperf3
 jq
+lynx
 moreutils
 neovim
+nmap
 ripgrep
+rsync
 tealdeer
 tmux
+tree
+vim
+w3m
 wget
-
-# Development
-build-essential
-nodejs
-npm
-pipx
-
-# Networking & diagnostics
-iperf3
-lynx
-nmap
-sshpass
-
-# Terminal extras
-bat
-chafa
-fonts-firacode
-irssi
-neofetch
+yq

@@ -1,0 +1,8 @@
+# Linux client: prompt before installing
+build-essential
+irssi
+nfs-common
+nodejs
+npm
+pipx
+sshpass
