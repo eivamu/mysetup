@@ -278,6 +278,82 @@ install_tmux() {
 
 install_tmux
 
+# --- Vim/Neovim config ---
+install_vim() {
+    # Symlink .vimrc
+    local candidates=(
+        "$PLATFORM/$ROLE/.vimrc"
+        "$PLATFORM/.vimrc"
+        "shared/$ROLE/.vimrc"
+        "shared/.vimrc"
+    )
+
+    local source=""
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -z "$source" ]]; then
+        echo "No .vimrc found, skipping."
+        return
+    fi
+
+    local target="$HOME/.vimrc"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        local backup="$target.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$target" "$backup"
+        echo "Backed up $target → $backup"
+    fi
+    ln -sf "$source" "$target"
+    echo "Linked $target → $source"
+
+    # Symlink vim colorscheme files
+    local source_colors
+    source_colors="$(dirname "$source")/.vim/colors"
+    if [[ -d "$source_colors" ]]; then
+        mkdir -p "$HOME/.vim/colors"
+        for colorfile in "$source_colors"/*; do
+            local name
+            name="$(basename "$colorfile")"
+            ln -sf "$colorfile" "$HOME/.vim/colors/$name"
+            echo "Linked ~/.vim/colors/$name → $colorfile"
+        done
+    fi
+
+    # Symlink neovim init.vim
+    local nvim_candidates=(
+        "$PLATFORM/$ROLE/.config/nvim/init.vim"
+        "$PLATFORM/.config/nvim/init.vim"
+        "shared/$ROLE/.config/nvim/init.vim"
+        "shared/.config/nvim/init.vim"
+    )
+
+    local nvim_source=""
+    for candidate in "${nvim_candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            nvim_source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -n "$nvim_source" ]]; then
+        mkdir -p "$HOME/.config/nvim"
+        local nvim_target="$HOME/.config/nvim/init.vim"
+        if [[ -f "$nvim_target" && ! -L "$nvim_target" ]]; then
+            local backup="$nvim_target.backup.$(date +%Y%m%d%H%M%S)"
+            cp "$nvim_target" "$backup"
+            echo "Backed up $nvim_target → $backup"
+        fi
+        ln -sf "$nvim_source" "$nvim_target"
+        echo "Linked $nvim_target → $nvim_source"
+    fi
+}
+
+install_vim
+
 # --- Packages ---
 install_packages
 

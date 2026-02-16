@@ -1,0 +1,20 @@
+colorscheme tokyonight
+set background=dark
+syntax on
+
+set number
+set cursorline
+set showmatch
+set mouse=a
+set backspace=indent,eol,start
+set ruler
+set incsearch
+set hlsearch
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set scrolloff=5
+set sidescrolloff=5
+set noerrorbells
+set visualbell
+set t_vb=
