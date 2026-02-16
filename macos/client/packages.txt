@@ -11,7 +11,6 @@ grep
 himalaya
 iperf3
 neovim
-opencode
 pip-tools
 pipx
 ripgrep
