@@ -1,12 +1,7 @@
-# macOS client: GUI apps
-betterdisplay
-claude
+# macOS client: always install
 font-fira-code
 iterm2
 linearmouse
 obsidian
 rectangle
-signal
-telegram
 visual-studio-code
-windows-app

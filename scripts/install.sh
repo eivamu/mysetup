@@ -103,6 +103,24 @@ cask_install() {
     fi
 }
 
+cask_ask_install() {
+    if [[ $PLATFORM != "macos" ]]; then
+        return
+    fi
+    for cask in "$@"; do
+        if brew list --cask "$cask" &>/dev/null; then
+            echo "$cask -> already installed"
+        else
+            read -rp "Install $cask? [y/N] " answer
+            if [[ "${answer,,}" == "y" ]]; then
+                cask_install "$cask"
+            else
+                echo "$cask -> skipped"
+            fi
+        fi
+    done
+}
+
 read_pkg_file() {
     local file="$1"
     local -n arr=$2
@@ -118,6 +136,7 @@ install_packages() {
     local pkg_file="$REPO_ROOT/$PLATFORM/$ROLE/packages.txt"
     local ask_file="$REPO_ROOT/$PLATFORM/$ROLE/packages-ask.txt"
     local cask_file="$REPO_ROOT/$PLATFORM/$ROLE/casks.txt"
+    local cask_ask_file="$REPO_ROOT/$PLATFORM/$ROLE/casks-ask.txt"
 
     if [[ -f "$pkg_file" ]]; then
         echo "Installing packages from $PLATFORM/$ROLE/packages.txt"
@@ -146,6 +165,16 @@ install_packages() {
         read_pkg_file "$cask_file" casks
         if [[ ${#casks[@]} -gt 0 ]]; then
             cask_install "${casks[@]}"
+        fi
+    fi
+
+    if [[ -f "$cask_ask_file" ]]; then
+        echo ""
+        echo "Optional casks from $PLATFORM/$ROLE/casks-ask.txt"
+        local ask_casks=()
+        read_pkg_file "$cask_ask_file" ask_casks
+        if [[ ${#ask_casks[@]} -gt 0 ]]; then
+            cask_ask_install "${ask_casks[@]}"
         fi
     fi
 }

@@ -35,7 +35,8 @@ shared/              — cross-platform defaults
 **Package lists** are flat — no layering. Each `{platform}/{role}/` has self-contained `.txt` files:
 - `packages.txt` — always-install CLI packages (brew formulae / apt / dnf)
 - `packages-ask.txt` — optional packages; prompts `Install <pkg>? [y/N]` if not already installed
-- `casks.txt` — GUI apps (macOS only, brew casks)
+- `casks.txt` — always-install GUI apps (macOS only, brew casks)
+- `casks-ask.txt` — optional GUI apps; prompts before installing (macOS only)
 
 Format: one package per line, `#` comments allowed, blank lines ignored.
 

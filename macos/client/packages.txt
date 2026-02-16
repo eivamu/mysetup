@@ -1,18 +1,21 @@
-# macOS client: CLI formulae
-azure-cli
+# macOS client: always install
 bat
 btop
+curl
 fastfetch
 fd
 fzf
 gh
 git
 grep
-himalaya
+htop
 iperf3
+jq
 neovim
 pip-tools
 pipx
 ripgrep
+rsync
 tealdeer
 tmux
+tree
