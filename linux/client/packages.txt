@@ -1,14 +1,37 @@
 # Linux client: CLI tools
-bat
+
+# Core tools
 btop
+curl
 fd-find
 fzf
 gh
 git
-himalaya
+git-crypt
+gnupg
+jq
+moreutils
 neovim
-pip-tools
-pipx
 ripgrep
 tealdeer
 tmux
+wget
+
+# Development
+build-essential
+nodejs
+npm
+pipx
+
+# Networking & diagnostics
+iperf3
+lynx
+nmap
+sshpass
+
+# Terminal extras
+bat
+chafa
+fonts-firacode
+irssi
+neofetch

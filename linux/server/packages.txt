@@ -1,11 +1,15 @@
 # Linux server: minimal tooling
-bat
 btop
-fd-find
+curl
 fzf
 gh
 git
+git-crypt
+gnupg
+jq
+moreutils
 neovim
 ripgrep
 tealdeer
 tmux
+wget
