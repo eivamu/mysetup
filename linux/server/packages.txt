@@ -1,15 +1,17 @@
-# Linux server: minimal tooling
+# Linux server: always install
 btop
 curl
-fzf
-gh
+fail2ban
+fastfetch
 git
-git-crypt
-gnupg
+htop
 jq
-moreutils
-neovim
-ripgrep
+nfs-common
+rsync
 tealdeer
 tmux
+tree
+vim
+w3m
 wget
+yq

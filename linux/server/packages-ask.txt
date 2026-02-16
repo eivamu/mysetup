@@ -1,0 +1,4 @@
+# Linux server: prompt before installing
+docker.io
+qemu-guest-agent
+ufw

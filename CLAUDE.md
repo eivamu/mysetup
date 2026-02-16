@@ -33,14 +33,15 @@ shared/              — cross-platform defaults
 **Dotfiles** (`.gitconfig`, `.tmux.conf`) use layered merging: the install script searches all four levels (shared → shared/$ROLE → $PLATFORM → $PLATFORM/$ROLE) and includes/symlinks whichever exist. Most specific wins or all get included (git uses `[include]`; tmux uses first-match).
 
 **Package lists** are flat — no layering. Each `{platform}/{role}/` has self-contained `.txt` files:
-- `packages.txt` — CLI packages (brew formulae / apt / dnf)
+- `packages.txt` — always-install CLI packages (brew formulae / apt / dnf)
+- `packages-ask.txt` — optional packages; prompts `Install <pkg>? [y/N]` if not already installed
 - `casks.txt` — GUI apps (macOS only, brew casks)
 
 Format: one package per line, `#` comments allowed, blank lines ignored.
 
 ### Package Helpers
 
-`pkg_install` and `cask_install` in `install.sh` are idempotent — they check whether each package is already installed before calling the package manager. Supported: `brew` (macOS), `apt-get` and `dnf` (Linux).
+`pkg_install`, `pkg_ask_install`, and `cask_install` in `install.sh` are idempotent — they check whether each package is already installed before calling the package manager. Supported: `brew` (macOS), `apt-get` and `dnf` (Linux).
 
 ## Current Targets
 

@@ -35,50 +35,54 @@ echo "Role:     $ROLE"
 echo ""
 
 # --- Package helpers ---
+is_pkg_installed() {
+    if [[ $PLATFORM == "macos" ]]; then
+        brew list --formula "$1" &>/dev/null
+    elif command -v dpkg &>/dev/null; then
+        dpkg -s "$1" &>/dev/null
+    elif command -v rpm &>/dev/null; then
+        rpm -q "$1" &>/dev/null
+    fi
+}
+
 pkg_install() {
     local to_install=()
-    if [[ $PLATFORM == "macos" ]]; then
-        for pkg in "$@"; do
-            if brew list --formula "$pkg" &>/dev/null; then
-                echo "$pkg -> already installed"
-            else
-                echo "$pkg -> installing"
-                to_install+=("$pkg")
-            fi
-        done
-        if [[ ${#to_install[@]} -gt 0 ]]; then
-            brew install "${to_install[@]}"
-        fi
-    else
-        if command -v apt-get &>/dev/null; then
-            for pkg in "$@"; do
-                if dpkg -s "$pkg" &>/dev/null; then
-                    echo "$pkg -> already installed"
-                else
-                    echo "$pkg -> installing"
-                    to_install+=("$pkg")
-                fi
-            done
-            if [[ ${#to_install[@]} -gt 0 ]]; then
-                sudo apt-get install -y "${to_install[@]}"
-            fi
-        elif command -v dnf &>/dev/null; then
-            for pkg in "$@"; do
-                if rpm -q "$pkg" &>/dev/null; then
-                    echo "$pkg -> already installed"
-                else
-                    echo "$pkg -> installing"
-                    to_install+=("$pkg")
-                fi
-            done
-            if [[ ${#to_install[@]} -gt 0 ]]; then
-                sudo dnf install -y "${to_install[@]}"
-            fi
+    for pkg in "$@"; do
+        if is_pkg_installed "$pkg"; then
+            echo "$pkg -> already installed"
         else
-            echo "Error: no supported package manager found (need apt-get or dnf)"
-            exit 1
+            echo "$pkg -> installing"
+            to_install+=("$pkg")
         fi
+    done
+    if [[ ${#to_install[@]} -eq 0 ]]; then
+        return
     fi
+    if [[ $PLATFORM == "macos" ]]; then
+        brew install "${to_install[@]}"
+    elif command -v apt-get &>/dev/null; then
+        sudo apt-get install -y "${to_install[@]}"
+    elif command -v dnf &>/dev/null; then
+        sudo dnf install -y "${to_install[@]}"
+    else
+        echo "Error: no supported package manager found (need apt-get or dnf)"
+        exit 1
+    fi
+}
+
+pkg_ask_install() {
+    for pkg in "$@"; do
+        if is_pkg_installed "$pkg"; then
+            echo "$pkg -> already installed"
+        else
+            read -rp "Install $pkg? [y/N] " answer
+            if [[ "${answer,,}" == "y" ]]; then
+                pkg_install "$pkg"
+            else
+                echo "$pkg -> skipped"
+            fi
+        fi
+    done
 }
 
 cask_install() {
@@ -99,35 +103,47 @@ cask_install() {
     fi
 }
 
+read_pkg_file() {
+    local file="$1"
+    local -n arr=$2
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%%#*}"       # strip comments
+        line="${line// /}"       # strip whitespace
+        [[ -z "$line" ]] && continue
+        arr+=("$line")
+    done < "$file"
+}
+
 install_packages() {
     local pkg_file="$REPO_ROOT/$PLATFORM/$ROLE/packages.txt"
+    local ask_file="$REPO_ROOT/$PLATFORM/$ROLE/packages-ask.txt"
     local cask_file="$REPO_ROOT/$PLATFORM/$ROLE/casks.txt"
 
     if [[ -f "$pkg_file" ]]; then
-        echo "Reading $PLATFORM/$ROLE/packages.txt"
+        echo "Installing packages from $PLATFORM/$ROLE/packages.txt"
         local pkgs=()
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            line="${line%%#*}"       # strip comments
-            line="${line// /}"       # strip whitespace
-            [[ -z "$line" ]] && continue
-            pkgs+=("$line")
-        done < "$pkg_file"
+        read_pkg_file "$pkg_file" pkgs
         if [[ ${#pkgs[@]} -gt 0 ]]; then
             pkg_install "${pkgs[@]}"
         fi
     else
-        echo "No packages.txt found for $PLATFORM/$ROLE, skipping formulae."
+        echo "No packages.txt found for $PLATFORM/$ROLE, skipping."
+    fi
+
+    if [[ -f "$ask_file" ]]; then
+        echo ""
+        echo "Optional packages from $PLATFORM/$ROLE/packages-ask.txt"
+        local ask_pkgs=()
+        read_pkg_file "$ask_file" ask_pkgs
+        if [[ ${#ask_pkgs[@]} -gt 0 ]]; then
+            pkg_ask_install "${ask_pkgs[@]}"
+        fi
     fi
 
     if [[ -f "$cask_file" ]]; then
-        echo "Reading $PLATFORM/$ROLE/casks.txt"
+        echo "Installing casks from $PLATFORM/$ROLE/casks.txt"
         local casks=()
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            line="${line%%#*}"
-            line="${line// /}"
-            [[ -z "$line" ]] && continue
-            casks+=("$line")
-        done < "$cask_file"
+        read_pkg_file "$cask_file" casks
         if [[ ${#casks[@]} -gt 0 ]]; then
             cask_install "${casks[@]}"
         fi
