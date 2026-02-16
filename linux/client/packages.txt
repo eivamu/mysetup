@@ -1,0 +1,14 @@
+# Linux client: CLI tools
+bat
+btop
+fd-find
+fzf
+gh
+git
+himalaya
+neovim
+pip-tools
+pipx
+ripgrep
+tealdeer
+tmux

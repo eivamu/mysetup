@@ -1,0 +1,12 @@
+# macOS client: GUI apps
+betterdisplay
+claude
+font-fira-code
+iterm2
+linearmouse
+obsidian
+rectangle
+signal
+telegram
+visual-studio-code
+windows-app

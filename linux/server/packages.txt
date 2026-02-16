@@ -1,0 +1,11 @@
+# Linux server: minimal tooling
+bat
+btop
+fd-find
+fzf
+gh
+git
+neovim
+ripgrep
+tealdeer
+tmux

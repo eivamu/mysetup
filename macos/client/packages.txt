@@ -1,0 +1,19 @@
+# macOS client: CLI formulae
+azure-cli
+bat
+btop
+fastfetch
+fd
+fzf
+gh
+git
+grep
+himalaya
+iperf3
+neovim
+opencode
+pip-tools
+pipx
+ripgrep
+tealdeer
+tmux
