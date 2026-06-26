@@ -354,6 +354,41 @@ install_vim() {
 
 install_vim
 
+# --- Bash aliases ---
+install_bash_aliases() {
+    # Symlink .bash_aliases (sourced by ~/.bashrc on Debian/Ubuntu)
+    local candidates=(
+        "$PLATFORM/$ROLE/.bash_aliases"
+        "$PLATFORM/.bash_aliases"
+        "shared/$ROLE/.bash_aliases"
+        "shared/.bash_aliases"
+    )
+
+    local source=""
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -z "$source" ]]; then
+        echo "No .bash_aliases found, skipping."
+        return
+    fi
+
+    local target="$HOME/.bash_aliases"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        local backup="$target.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$target" "$backup"
+        echo "Backed up $target → $backup"
+    fi
+    ln -sf "$source" "$target"
+    echo "Linked $target → $source"
+}
+
+install_bash_aliases
+
 # --- Packages ---
 install_packages
 
