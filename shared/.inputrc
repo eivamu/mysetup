@@ -1,0 +1,13 @@
+# readline config. A user ~/.inputrc replaces /etc/inputrc entirely, so pull
+# the distro defaults back in first.
+$include /etc/inputrc
+
+# Absorb terminal focus in/out reports (DECSET 1004).
+#
+# tmux has focus-events on, so it forwards \e[I / \e[O to any pane whose app
+# enabled mode 1004. When that app exits — or hands the terminal back to the
+# shell — readline still receives the sequence, can't parse it, and rings the
+# bell on every window switch. Binding both to an empty macro consumes them
+# silently and keeps focus reporting working for vim and Claude Code.
+"\e[I": ""
+"\e[O": ""

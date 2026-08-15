@@ -389,6 +389,41 @@ install_bash_aliases() {
 
 install_bash_aliases
 
+# --- Readline ---
+install_inputrc() {
+    # Symlink .inputrc (read by readline/bash at startup)
+    local candidates=(
+        "$PLATFORM/$ROLE/.inputrc"
+        "$PLATFORM/.inputrc"
+        "shared/$ROLE/.inputrc"
+        "shared/.inputrc"
+    )
+
+    local source=""
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -z "$source" ]]; then
+        echo "No .inputrc found, skipping."
+        return
+    fi
+
+    local target="$HOME/.inputrc"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        local backup="$target.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$target" "$backup"
+        echo "Backed up $target → $backup"
+    fi
+    ln -sf "$source" "$target"
+    echo "Linked $target → $source"
+}
+
+install_inputrc
+
 # --- Packages ---
 install_packages
 
