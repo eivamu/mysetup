@@ -424,6 +424,42 @@ install_inputrc() {
 
 install_inputrc
 
+# --- Ghostty ---
+install_ghostty() {
+    # Symlink Ghostty config (~/.config/ghostty/config on Linux and macOS)
+    local candidates=(
+        "$PLATFORM/$ROLE/.config/ghostty/config"
+        "$PLATFORM/.config/ghostty/config"
+        "shared/$ROLE/.config/ghostty/config"
+        "shared/.config/ghostty/config"
+    )
+
+    local source=""
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$REPO_ROOT/$candidate" ]]; then
+            source="$REPO_ROOT/$candidate"
+            break
+        fi
+    done
+
+    if [[ -z "$source" ]]; then
+        echo "No Ghostty config found, skipping."
+        return
+    fi
+
+    mkdir -p "$HOME/.config/ghostty"
+    local target="$HOME/.config/ghostty/config"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        local backup="$target.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$target" "$backup"
+        echo "Backed up $target → $backup"
+    fi
+    ln -sf "$source" "$target"
+    echo "Linked $target → $source"
+}
+
+install_ghostty
+
 # --- Packages ---
 install_packages
 
